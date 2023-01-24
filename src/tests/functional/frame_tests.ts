@@ -2,9 +2,9 @@ import { Page, test } from "@playwright/test"
 import { assert, Assertion } from "chai"
 import {
   attributeForSelector,
-  cancelNextEvent,
   hasSelector,
   innerHTMLForSelector,
+  listenForEventOnTarget,
   nextAttributeMutationNamed,
   noNextAttributeMutationNamed,
   nextBeat,
@@ -18,6 +18,7 @@ import {
   scrollPosition,
   scrollToSelector,
   searchParams,
+  cancelNextEvent,
 } from "../helpers/page"
 
 assert.equal = function (actual: any, expected: any, message?: string) {
@@ -442,9 +443,11 @@ test("test navigating a frame from an outer form fires events", async ({ page })
 })
 
 test("test navigating a frame from an outer link fires events", async ({ page }) => {
+  await listenForEventOnTarget(page, "outside-frame-form", "turbo:click")
   await page.click("#outside-frame-form")
 
   await nextEventOnTarget(page, "outside-frame-form", "turbo:click")
+  await nextEventOnTarget(page, "outside-frame-form", "turbo:frame-click")
   await nextEventOnTarget(page, "frame", "turbo:before-fetch-request")
   await nextEventOnTarget(page, "frame", "turbo:before-fetch-response")
   const { fetchResponse } = await nextEventOnTarget(page, "frame", "turbo:frame-render")
@@ -456,17 +459,12 @@ test("test navigating a frame from an outer link fires events", async ({ page })
   assert.equal(otherEvents.length, 0, "no more events")
 })
 
-test("test canceling a turbo:cilck event falls back to built-in browser navigation", async ({ page }) => {
-  await cancelNextEvent(page, "turbo:click")
-  await Promise.all([page.waitForNavigation(), page.click("#link-frame")])
-
-  assert.equal(pathname(page.url()), "/src/tests/fixtures/frames/frame.html")
-})
-
 test("test navigating a frame from an inner link fires events", async ({ page }) => {
+  await listenForEventOnTarget(page, "link-frame", "turbo:click")
   await page.click("#link-frame")
 
   await nextEventOnTarget(page, "link-frame", "turbo:click")
+  await nextEventOnTarget(page, "link-frame", "turbo:frame-click")
   await nextEventOnTarget(page, "frame", "turbo:before-fetch-request")
   await nextEventOnTarget(page, "frame", "turbo:before-fetch-response")
   const { fetchResponse } = await nextEventOnTarget(page, "frame", "turbo:frame-render")
@@ -479,6 +477,7 @@ test("test navigating a frame from an inner link fires events", async ({ page })
 })
 
 test("test navigating a frame targeting _top from an outer link fires events", async ({ page }) => {
+  await listenForEventOnTarget(page, "outside-navigate-top-link", "turbo:click")
   await page.click("#outside-navigate-top-link")
 
   await nextEventOnTarget(page, "outside-navigate-top-link", "turbo:click")
@@ -490,6 +489,13 @@ test("test navigating a frame targeting _top from an outer link fires events", a
 
   const otherEvents = await readEventLogs(page)
   assert.equal(otherEvents.length, 0, "no more events")
+})
+
+test("test canceling a turbo:frame-click event falls back to built-in browser navigation", async ({ page }) => {
+  await cancelNextEvent(page, "turbo:frame-click")
+  await Promise.all([page.waitForNavigation(), page.click("#link-frame")])
+
+  assert.equal(pathname(page.url()), "/src/tests/fixtures/frames/frame.html")
 })
 
 test("test invoking .reload() re-fetches the frame's content", async ({ page }) => {
@@ -797,12 +803,11 @@ test("test navigating back after pushing URL state from a turbo-frame[data-turbo
 
   const title = await page.textContent("h1")
   const frameTitle = await page.textContent("#frame h2")
-  const src = new URL((await attributeForSelector(page, "#frame", "src")) || "")
 
   assert.equal(title, "Frames")
   assert.equal(frameTitle, "Frames: #frame")
   assert.equal(pathname(page.url()), "/src/tests/fixtures/frames.html")
-  assert.equal(src.pathname, "/src/tests/fixtures/frames/frame.html")
+  assert.equal(await attributeForSelector(page, "#frame", "src"), null)
   assert.equal(await propertyForSelector(page, "#frame", "src"), null)
 })
 

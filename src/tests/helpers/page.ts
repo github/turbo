@@ -14,7 +14,7 @@ export function attributeForSelector(page: Page, selector: string, attributeName
   return page.locator(selector).getAttribute(attributeName)
 }
 
-type CancellableEvent = "turbo:click" | "turbo:before-visit"
+type CancellableEvent = "turbo:click" | "turbo:before-visit" | "turbo:frame-click"
 
 export function cancelNextEvent(page: Page, eventName: CancellableEvent): Promise<void> {
   return page.evaluate(
@@ -98,6 +98,18 @@ export async function nextEventOnTarget(page: Page, elementId: string, eventName
     record = records.find(([name, _, id]) => name == eventName && id == elementId)
   }
   return record[1]
+}
+
+export async function listenForEventOnTarget(page: Page, elementId: string, eventName: string): Promise<void> {
+  return page.locator("#" + elementId).evaluate((element, eventName) => {
+    const eventLogs = (window as any).eventLogs
+
+    element.addEventListener(eventName, ({ target, type }) => {
+      if (target instanceof Element) {
+        eventLogs.push([type, {}, target.id])
+      }
+    })
+  }, eventName)
 }
 
 export async function nextAttributeMutationNamed(
