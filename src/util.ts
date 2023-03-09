@@ -1,4 +1,5 @@
 import { Action, isAction } from "./core/types"
+import { CSPTrustedTypesPolicy } from "./trusted_types"
 
 export type DispatchOptions<T extends CustomEvent> = {
   target: EventTarget
@@ -17,7 +18,7 @@ export function activateScriptElement(element: HTMLScriptElement) {
     }
     createdScriptElement.textContent = element.textContent
     createdScriptElement.async = false
-    copyElementAttributes(createdScriptElement, element)
+    copyScriptAttributes(createdScriptElement, element)
     return createdScriptElement
   }
 }
@@ -35,6 +36,17 @@ export function activateImageElement(element: HTMLImageElement) {
 function copyElementAttributes(destinationElement: Element, sourceElement: Element) {
   for (const { name, value } of sourceElement.attributes) {
     destinationElement.setAttribute(name, value)
+  }
+}
+
+function copyScriptAttributes(destinationElement: HTMLScriptElement, sourceElement: HTMLScriptElement) {
+  for (const { name, value } of sourceElement.attributes) {
+    if (name === "src" && CSPTrustedTypesPolicy !== null) {
+      const trustedElementSrc = CSPTrustedTypesPolicy.createScriptURL(value as string)
+      destinationElement.setAttribute(name, trustedElementSrc as string)
+    } else {
+      destinationElement.setAttribute(name, value)
+    }
   }
 }
 

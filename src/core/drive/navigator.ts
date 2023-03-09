@@ -91,12 +91,12 @@ export class Navigator {
           this.view.clearSnapshotCache()
         }
 
-        const { statusCode, redirected } = fetchResponse
+        const { statusCode, redirected, response } = fetchResponse
         const action = this.getActionForFormSubmission(formSubmission)
         const visitOptions = {
           action,
           shouldCacheSnapshot,
-          response: { statusCode, responseHTML, redirected },
+          response: { statusCode, redirected, response },
         }
 
         const location = fetchResponse.location
@@ -112,7 +112,8 @@ export class Navigator {
     const responseHTML = await fetchResponse.responseHTML
 
     if (responseHTML) {
-      const snapshot = PageSnapshot.fromHTMLString(responseHTML)
+      const snapshot = await PageSnapshot.fromResponse(fetchResponse.response)
+
       if (fetchResponse.serverError) {
         await this.view.renderError(snapshot, this.currentVisit)
       } else {

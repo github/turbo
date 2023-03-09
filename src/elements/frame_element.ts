@@ -2,6 +2,7 @@ import { FetchResponse } from "../http/fetch_response"
 import { Snapshot } from "../core/snapshot"
 import { LinkInterceptorDelegate } from "../core/frames/link_interceptor"
 import { FormSubmitObserverDelegate } from "../observers/form_submit_observer"
+import { CSPTrustedTypesPolicy } from "../trusted_types"
 
 export enum FrameLoadingStyle {
   eager = "eager",
@@ -93,7 +94,12 @@ export class FrameElement extends HTMLElement {
    */
   set src(value: string | null) {
     if (value) {
-      this.setAttribute("src", value)
+      if (CSPTrustedTypesPolicy) {
+        const trustedValue = CSPTrustedTypesPolicy.createScriptURL(value)
+        this.setAttribute("src", trustedValue as string)
+      } else {
+        this.setAttribute("src", value)
+      }
     } else {
       this.removeAttribute("src")
     }

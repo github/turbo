@@ -1,8 +1,11 @@
 const { TestServer } = require("../../dist/tests/server")
+const { execSync } = require("child_process")
 const configuration = require("../../intern.json")
 const intern = require("intern").default
 const arg = require("arg");
-const { CHROMEVER } = process.env
+
+// In codespaces, we can automatically detect the Chrome Driver version, on local machines we know less about the setup so we cannot.
+const CHROMEVER = process.env["CHROMEVER"] || (process.env["CODESPACES"] ? execSync("chromedriver --version | cut -d' ' -f2").toString().trim() : undefined)
 
 const args = arg({
   "--grep": String,
