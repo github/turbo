@@ -1,5 +1,5 @@
 {
-  "name": "@manuelpuyol/turbo",
+  "name": "@github/turbo",
   "version": "7.2.6",
   "description": "The speed of a single-page web application without having to write any JavaScript",
   "module": "dist/turbo.es2017-esm.js",
