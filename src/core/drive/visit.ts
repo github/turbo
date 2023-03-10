@@ -354,7 +354,6 @@ export class Visit implements FetchRequestDelegate {
       this.recordResponse({
         statusCode: SystemStatusCode.contentTypeMismatch,
         redirected,
-        response,
       })
     } else {
       this.redirectedToLocation = fetchResponse.redirected ? fetchResponse.location : undefined
@@ -372,7 +371,6 @@ export class Visit implements FetchRequestDelegate {
       this.recordResponse({
         statusCode: SystemStatusCode.contentTypeMismatch,
         redirected,
-        response,
       })
     } else {
       this.recordResponse({ statusCode: statusCode, redirected, response })
