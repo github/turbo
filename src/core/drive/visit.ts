@@ -354,13 +354,14 @@ export class Visit implements FetchRequestDelegate {
       this.recordResponse({
         statusCode: SystemStatusCode.contentTypeMismatch,
         redirected,
+        response,
       })
     } else {
       this.redirectedToLocation = fetchResponse.redirected ? fetchResponse.location : undefined
       if (this.redirectedToLocation && fetchResponse.location.hash === "") {
         this.redirectedToLocation.hash = request.url.hash
       }
-      this.recordResponse({ statusCode: statusCode, response, redirected })
+      this.recordResponse({ statusCode: statusCode, redirected, response })
     }
   }
 
@@ -371,9 +372,10 @@ export class Visit implements FetchRequestDelegate {
       this.recordResponse({
         statusCode: SystemStatusCode.contentTypeMismatch,
         redirected,
+        response,
       })
     } else {
-      this.recordResponse({ statusCode: statusCode, response, redirected })
+      this.recordResponse({ statusCode: statusCode, redirected, response })
     }
   }
 
