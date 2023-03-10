@@ -1,10 +1,9 @@
-name: Publish Next Package to npmjs
-
+name: Publish Beta Package to npmjs
 on:
   push:
     branches:
       - main
-
+  workflow_dispatch:
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -29,5 +28,11 @@ jobs:
       - run: yarn build
 
       - run: npm publish --tag next
+        if: github.ref == 'refs/heads/main'
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+
+      - run: npm publish --tag $(git rev-parse --short HEAD)
+        if: github.event_name == 'workflow_dispatch'
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
