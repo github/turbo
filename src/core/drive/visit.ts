@@ -68,6 +68,7 @@ export type VisitResponse = {
   statusCode: number
   redirected: boolean
   response?: Response
+  responseHTML?: string
 }
 
 export enum SystemStatusCode {
@@ -253,17 +254,17 @@ export class Visit implements FetchRequestDelegate {
 
   loadResponse() {
     if (this.response) {
-      const { statusCode, response } = this.response
+      const { statusCode, response, responseHTML } = this.response
       this.render(async () => {
         if (this.shouldCacheSnapshot) this.cacheSnapshot()
         if (this.view.renderPromise) await this.view.renderPromise
-        if (isSuccessful(statusCode) && response != null) {
-          await this.view.renderPage(await PageSnapshot.fromResponse(response), false, this.willRender, this)
+        if (isSuccessful(statusCode) && responseHTML != null) {
+          await this.view.renderPage(PageSnapshot.fromResponse(response, responseHTML), false, this.willRender, this)
           this.performScroll()
           this.adapter.visitRendered(this)
           this.complete()
         } else {
-          await this.view.renderError(await PageSnapshot.fromResponse(response), this)
+          await this.view.renderError(PageSnapshot.fromResponse(response, responseHTML), this)
           this.adapter.visitRendered(this)
           this.fail()
         }
@@ -360,7 +361,7 @@ export class Visit implements FetchRequestDelegate {
       if (this.redirectedToLocation && fetchResponse.location.hash === "") {
         this.redirectedToLocation.hash = request.url.hash
       }
-      this.recordResponse({ statusCode: statusCode, redirected, response })
+      this.recordResponse({ statusCode: statusCode, redirected, response, responseHTML })
     }
   }
 
@@ -373,7 +374,7 @@ export class Visit implements FetchRequestDelegate {
         redirected,
       })
     } else {
-      this.recordResponse({ statusCode: statusCode, redirected, response })
+      this.recordResponse({ statusCode: statusCode, redirected, response, responseHTML })
     }
   }
 

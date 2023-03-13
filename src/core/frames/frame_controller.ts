@@ -421,7 +421,8 @@ export class FrameController
       frame.delegate.fetchResponseLoaded = (fetchResponse: FetchResponse) => {
         if (frame.src) {
           const { statusCode, redirected, response } = fetchResponse
-          const visitResponse = { statusCode, redirected, response }
+          const responseHTML = frame.ownerDocument.documentElement.outerHTML
+          const visitResponse = { statusCode, redirected, response, responseHTML }
           const options: Partial<VisitOptions> = {
             response: visitResponse,
             visitCachedSnapshot,
@@ -469,9 +470,10 @@ export class FrameController
 
   private async visitResponse(response: Response): Promise<void> {
     const wrapped = new FetchResponse(response)
+    const responseHTML = await wrapped.responseHTML
     const { location, redirected, statusCode } = wrapped
 
-    return session.visit(location, { response: { redirected, statusCode, response } })
+    return session.visit(location, { response: { redirected, statusCode, response, responseHTML } })
   }
 
   private findFrameElement(element: Element, submitter?: HTMLElement) {

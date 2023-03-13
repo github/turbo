@@ -1,3 +1,4 @@
+import "../helpers/trusted_type_setup"
 import { test } from "@playwright/test"
 import { assert } from "chai"
 import { nextBody, pathname, visitAction } from "../helpers/page"

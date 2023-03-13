@@ -37,3 +37,6 @@ jobs:
 
     - name: Firefox Test
       run: yarn test:browser --project=firefox
+
+    - name: Chrome With Trusted Types Test
+      run: yarn test:browser --project=chrome-with-trusted-types

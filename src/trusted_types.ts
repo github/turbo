@@ -22,7 +22,7 @@ interface TrustedTypesPolicyInterface {
 
 let CSPTrustedTypesPolicy: CSPTrustedTypesPolicy | null = null
 
-export function setCSPTrustedTypesPolicy(policy: CSPTrustedTypesPolicy) {
+export function setCSPTrustedTypesPolicy(policy: CSPTrustedTypesPolicy | null) {
   CSPTrustedTypesPolicy = policy
 }
 
