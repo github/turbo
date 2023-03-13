@@ -5,17 +5,13 @@ import { expandURL } from "../url"
 import { HeadSnapshot } from "./head_snapshot"
 
 export class PageSnapshot extends Snapshot<HTMLBodyElement> {
-  static async fromResponse(response?: Response): Promise<PageSnapshot> {
-    if (!response) {
-      return this.fromHTMLString()
+  static fromResponse(response?: Response, html = emptyHTML): PageSnapshot {
+    if (!response || CSPTrustedTypesPolicy == null) {
+      return this.fromHTMLString(html)
     }
-    const responseText = await response.text()
-    if (CSPTrustedTypesPolicy == null) {
-      return this.fromHTMLString(responseText)
-    } else {
-      const trustedHTML = CSPTrustedTypesPolicy.createHTML(responseText, response)
-      return this.fromHTMLString(trustedHTML as string)
-    }
+
+    const trustedHTML = CSPTrustedTypesPolicy.createHTML(html, response)
+    return this.fromHTMLString(trustedHTML as string)
   }
 
   static fromHTMLString(html = emptyHTML) {

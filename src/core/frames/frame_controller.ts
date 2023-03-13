@@ -469,9 +469,10 @@ export class FrameController
 
   private async visitResponse(response: Response): Promise<void> {
     const wrapped = new FetchResponse(response)
+    const responseHTML = await wrapped.responseHTML
     const { location, redirected, statusCode } = wrapped
 
-    return session.visit(location, { response: { redirected, statusCode, response } })
+    return session.visit(location, { response: { redirected, statusCode, response, responseHTML } })
   }
 
   private findFrameElement(element: Element, submitter?: HTMLElement) {

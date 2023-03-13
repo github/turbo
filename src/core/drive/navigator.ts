@@ -96,7 +96,7 @@ export class Navigator {
         const visitOptions = {
           action,
           shouldCacheSnapshot,
-          response: { statusCode, redirected, response },
+          response: { statusCode, redirected, response, responseHTML },
         }
 
         const location = fetchResponse.location
@@ -112,7 +112,7 @@ export class Navigator {
     const responseHTML = await fetchResponse.responseHTML
 
     if (responseHTML) {
-      const snapshot = await PageSnapshot.fromResponse(fetchResponse.response)
+      const snapshot = PageSnapshot.fromResponse(fetchResponse.response, responseHTML)
 
       if (fetchResponse.serverError) {
         await this.view.renderError(snapshot, this.currentVisit)
