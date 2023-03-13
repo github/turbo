@@ -18,7 +18,7 @@
   // Use 'forwardPorts' to make a list of ports inside the container available locally.
   // "forwardPorts": [],
   // Use 'postCreateCommand' to run commands after the container is created.
-  "postCreateCommand": "yarn install && yarn build",
+  "postCreateCommand": "yarn install && yarn build && yarn run playwright install",
   // Comment out connect as root instead. More info: https://aka.ms/vscode-remote/containers/non-root.
   "remoteUser": "node"
 }
