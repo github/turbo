@@ -421,7 +421,8 @@ export class FrameController
       frame.delegate.fetchResponseLoaded = (fetchResponse: FetchResponse) => {
         if (frame.src) {
           const { statusCode, redirected, response } = fetchResponse
-          const visitResponse = { statusCode, redirected, response }
+          const responseHTML = frame.ownerDocument.documentElement.outerHTML
+          const visitResponse = { statusCode, redirected, response, responseHTML }
           const options: Partial<VisitOptions> = {
             response: visitResponse,
             visitCachedSnapshot,
