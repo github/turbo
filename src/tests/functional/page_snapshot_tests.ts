@@ -1,12 +1,13 @@
+import "../helpers/trusted_type_setup"
 import { test } from "@playwright/test"
 import { assert } from "chai"
 
-test.beforeEach(async ({ page }) => {
+test.beforeEach(async ({ page }, workerInfo) => {
+  console.log(workerInfo.project.name)
   await page.goto("/src/tests/fixtures/form.html")
   await page.evaluate(() =>
     window.Turbo.setCSPTrustedTypesPolicy({
       createHTML: (s: string, response: Response) => {
-        console.log("---------- ", s)
         response.headers.append("X-TRUSTED", "true")
 
         return s.replace("Text", "Trusted")

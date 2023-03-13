@@ -1,3 +1,4 @@
+import "../helpers/trusted_type_setup"
 import { Page, test } from "@playwright/test"
 import { getFromLocalStorage, setLocalStorageFromEvent } from "../helpers/page"
 import { assert } from "chai"
