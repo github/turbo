@@ -32,6 +32,7 @@ export { TurboSubmitStartEvent, TurboSubmitEndEvent } from "./drive/form_submiss
 export { TurboFrameMissingEvent } from "./frames/frame_controller"
 
 export { StreamActions, TurboStreamAction, TurboStreamActions } from "./streams/stream_actions"
+export { setCSPTrustedTypesPolicy } from "../trusted_types"
 
 /**
  * Starts the main session.
