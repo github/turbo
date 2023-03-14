@@ -2,8 +2,7 @@ import "../helpers/trusted_type_setup"
 import { test } from "@playwright/test"
 import { assert } from "chai"
 
-test.beforeEach(async ({ page }, workerInfo) => {
-  console.log(workerInfo.project.name)
+test.beforeEach(async ({ page }) => {
   await page.goto("/src/tests/fixtures/form.html")
   await page.evaluate(() =>
     window.Turbo.setCSPTrustedTypesPolicy({
