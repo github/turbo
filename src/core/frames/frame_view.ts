@@ -6,7 +6,7 @@ export type FrameViewRenderOptions = ViewRenderOptions<FrameElement>
 
 export class FrameView extends View<FrameElement> {
   invalidate() {
-    this.element.innerHTML = ""
+    this.element.textContent = ""
   }
 
   get snapshot() {

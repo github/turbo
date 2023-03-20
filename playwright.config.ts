@@ -10,6 +10,10 @@ const config: PlaywrightTestConfig = {
       name: "firefox",
       use: { ...devices["Desktop Firefox"] },
     },
+    {
+      name: "chrome-with-trusted-types",
+      use: { ...devices["Desktop Chrome"] },
+    },
   ],
   retries: 2,
   testDir: "./src/tests/functional",

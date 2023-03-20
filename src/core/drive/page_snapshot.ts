@@ -1,10 +1,20 @@
+import { CSPTrustedTypesPolicy, emptyHTML } from "../../trusted_types"
 import { parseHTMLDocument } from "../../util"
 import { Snapshot } from "../snapshot"
 import { expandURL } from "../url"
 import { HeadSnapshot } from "./head_snapshot"
 
 export class PageSnapshot extends Snapshot<HTMLBodyElement> {
-  static fromHTMLString(html = "") {
+  static fromResponse(response?: Response, html = emptyHTML): PageSnapshot {
+    if (!response || CSPTrustedTypesPolicy == null) {
+      return this.fromHTMLString(html)
+    }
+
+    const trustedHTML = CSPTrustedTypesPolicy.createHTML(html, response)
+    return this.fromHTMLString(trustedHTML as string)
+  }
+
+  static fromHTMLString(html = emptyHTML) {
     return this.fromDocument(parseHTMLDocument(html))
   }
 

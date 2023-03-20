@@ -10,3 +10,4 @@ Turbo.start()
 export * from "./core"
 export * from "./elements"
 export * from "./http"
+export * from "./trusted_types"

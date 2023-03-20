@@ -1,3 +1,4 @@
+import "../helpers/trusted_type_setup"
 import { Page, test } from "@playwright/test"
 import { assert } from "chai"
 import { noNextEventOnTarget } from "../helpers/page"

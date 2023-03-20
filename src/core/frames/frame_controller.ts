@@ -32,6 +32,7 @@ import { VisitOptions } from "../drive/visit"
 import { TurboBeforeFrameRenderEvent, TurboFrameClickEvent } from "../session"
 import { StreamMessage } from "../streams/stream_message"
 import { PageSnapshot } from "../drive/page_snapshot"
+import { CSPTrustedTypesPolicy } from "../../trusted_types"
 
 type VisitFallback = (location: Response | Locatable, options: Partial<VisitOptions>) => Promise<void>
 export type TurboFrameMissingEvent = CustomEvent<{ response: Response; visit: VisitFallback }>
@@ -160,7 +161,14 @@ export class FrameController
     try {
       const html = await fetchResponse.responseHTML
       if (html) {
-        const { body } = parseHTMLDocument(html)
+        let body
+        if (CSPTrustedTypesPolicy == null) {
+          body = parseHTMLDocument(html).body
+        } else {
+          const trustedHTML = CSPTrustedTypesPolicy.createHTML(html, fetchResponse.response)
+          body = parseHTMLDocument(trustedHTML as string).body
+        }
+
         const newFrameElement = await this.extractForeignFrameElement(body)
 
         if (newFrameElement) {
@@ -412,11 +420,11 @@ export class FrameController
 
       frame.delegate.fetchResponseLoaded = (fetchResponse: FetchResponse) => {
         if (frame.src) {
-          const { statusCode, redirected } = fetchResponse
+          const { statusCode, redirected, response } = fetchResponse
           const responseHTML = frame.ownerDocument.documentElement.outerHTML
-          const response = { statusCode, redirected, responseHTML }
+          const visitResponse = { statusCode, redirected, response, responseHTML }
           const options: Partial<VisitOptions> = {
-            response,
+            response: visitResponse,
             visitCachedSnapshot,
             willRender: false,
             updateHistory: false,
@@ -465,7 +473,7 @@ export class FrameController
     const responseHTML = await wrapped.responseHTML
     const { location, redirected, statusCode } = wrapped
 
-    return session.visit(location, { response: { redirected, statusCode, responseHTML } })
+    return session.visit(location, { response: { redirected, statusCode, response, responseHTML } })
   }
 
   private findFrameElement(element: Element, submitter?: HTMLElement) {

@@ -1,3 +1,4 @@
+import "../helpers/trusted_type_setup"
 import { Page, test } from "@playwright/test"
 import { assert, Assertion } from "chai"
 import {
