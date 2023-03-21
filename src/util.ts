@@ -16,7 +16,13 @@ export function activateScriptElement(element: HTMLScriptElement) {
     if (cspNonce) {
       createdScriptElement.nonce = cspNonce
     }
-    createdScriptElement.textContent = element.textContent
+    if (element.textContent !== null) {
+      if (CSPTrustedTypesPolicy !== null) {
+        createdScriptElement.textContent = CSPTrustedTypesPolicy.createScript(element.textContent) as string
+      } else {
+        createdScriptElement.textContent = element.textContent
+      }
+    }
     createdScriptElement.async = false
     copyScriptAttributes(createdScriptElement, element)
     return createdScriptElement
