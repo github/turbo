@@ -22,6 +22,7 @@ export class ErrorRenderer extends Renderer<HTMLBodyElement, PageSnapshot> {
 
   activateScriptElements() {
     for (const replaceableElement of this.scriptElements) {
+      if (replaceableElement.type === "application/json") continue
       const parentNode = replaceableElement.parentNode
       if (parentNode) {
         const element = activateScriptElement(replaceableElement)
