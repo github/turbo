@@ -21,6 +21,8 @@ export class History {
   started = false
   pageLoaded = false
   previousScrollRestoration?: ScrollRestoration
+  // This can be customized by the consumer
+  shouldRestore: (state: any) => boolean = () => true
 
   constructor(delegate: HistoryDelegate) {
     this.delegate = delegate
@@ -94,7 +96,7 @@ export class History {
   onPopState = (event: PopStateEvent) => {
     if (this.shouldHandlePopState()) {
       const { turbo } = event.state || {}
-      if (turbo) {
+      if (this.shouldRestore(event.state) && turbo) {
         this.location = new URL(window.location.href)
         const { restorationIdentifier } = turbo
         this.restorationIdentifier = restorationIdentifier
