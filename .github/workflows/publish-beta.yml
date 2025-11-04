@@ -1,4 +1,6 @@
 name: Publish Beta Package to npmjs
+permissions:
+  contents: read
 on:
   push:
     branches:
