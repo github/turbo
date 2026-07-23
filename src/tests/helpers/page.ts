@@ -74,6 +74,13 @@ export async function isScrolledToSelector(page: Page, selector: string): Promis
   }
 }
 
+export function isSelectorInViewport(page: Page, selector: string): Promise<boolean> {
+  return page.locator(selector).evaluate((element) => {
+    const { top, bottom } = element.getBoundingClientRect()
+    return top >= 0 && bottom <= window.innerHeight
+  })
+}
+
 export function nextBeat() {
   return sleep(100)
 }

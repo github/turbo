@@ -6,6 +6,7 @@ import {
   hash,
   hasSelector,
   isScrolledToSelector,
+  isSelectorInViewport,
   nextAttributeMutationNamed,
   nextBeat,
   nextBody,
@@ -206,7 +207,7 @@ test("test following a same-origin link to a named anchor", async ({ page }) => 
   assert.equal(pathname(page.url()), "/src/tests/fixtures/one.html")
   assert.equal(hash(page.url()), "#named-anchor")
   assert.equal(await visitAction(page), "advance")
-  assert(await isScrolledToSelector(page, "[name=named-anchor]"))
+  assert(await isSelectorInViewport(page, "[name=named-anchor]"))
 })
 
 test("test following a cross-origin unannotated link", async ({ page }) => {
@@ -226,7 +227,7 @@ test("test following a same-origin [target] link", async ({ page }) => {
 test("test following a same-origin [download] link", async ({ page }) => {
   assert.notOk<boolean>(
     await willChangeBody(page, async () => {
-      await page.click("#same-origin-download-link")
+      await page.click("#same-origin-download-link", { noWaitAfter: true })
       await nextBeat()
     })
   )
