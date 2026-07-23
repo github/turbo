@@ -120,8 +120,17 @@ test("test canceling frame requests don't mutate the history", async ({ page }) 
   assert.equal(await page.getAttribute("#tab-frame", "complete"), "", "sets [complete]")
 
   // This request will be canceled
-  page.click("#tab-1")
-  await page.click("#tab-3")
+  let releaseRequest = () => {}
+  const requestCanContinue = new Promise<void>((resolve) => {
+    releaseRequest = resolve
+  })
+  await page.route("**/src/tests/fixtures/tabs.html", async (route) => {
+    await requestCanContinue
+    await route.continue()
+  })
+  await Promise.all([page.waitForRequest("**/src/tests/fixtures/tabs.html"), page.click("#tab-1")])
+  await Promise.all([page.waitForRequest("**/src/tests/fixtures/tabs/three.html"), page.click("#tab-3")])
+  releaseRequest()
 
   await nextEventOnTarget(page, "tab-frame", "turbo:frame-load")
   await nextEventNamed(page, "turbo:load")
