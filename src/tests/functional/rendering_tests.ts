@@ -67,7 +67,7 @@ test("test reloads when tracked elements change", async ({ page }) => {
 })
 
 test("test reloads when tracked elements change due to failed form submission", async ({ page }) => {
-  await page.click("#tracked-asset-change-form button")
+  await Promise.all([page.waitForNavigation(), page.click("#tracked-asset-change-form button")])
   await page.evaluate(() => {
     window.addEventListener(
       "turbo:reload",
@@ -86,7 +86,7 @@ test("test reloads when tracked elements change due to failed form submission", 
     )
   })
 
-  await page.click("#tracked-asset-change-form button")
+  await Promise.all([page.waitForNavigation(), page.click("#tracked-asset-change-form button")])
 
   const reason = await page.evaluate(() => localStorage.getItem("reason"))
   const unloaded = await page.evaluate(() => localStorage.getItem("unloaded"))

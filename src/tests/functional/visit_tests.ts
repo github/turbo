@@ -44,7 +44,7 @@ test("test programmatically visiting a same-origin location", async ({ page }) =
 
 test("skip programmatically visiting a cross-origin location falls back to window.location", async ({ page }) => {
   const urlBeforeVisit = page.url()
-  await visitLocation(page, "about:blank")
+  await Promise.all([page.waitForNavigation(), visitLocation(page, "about:blank")])
 
   const urlAfterVisit = page.url()
   assert.notEqual(urlBeforeVisit, urlAfterVisit)
@@ -53,8 +53,7 @@ test("skip programmatically visiting a cross-origin location falls back to windo
 
 test("test visiting a location served with a non-HTML content type", async ({ page }) => {
   const urlBeforeVisit = page.url()
-  await visitLocation(page, "/src/tests/fixtures/svg.svg")
-  await nextBeat()
+  await Promise.all([page.waitForNavigation(), visitLocation(page, "/src/tests/fixtures/svg.svg")])
 
   const url = page.url()
   const contentType = await contentTypeOfURL(url)

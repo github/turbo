@@ -161,17 +161,25 @@ export function propertyForSelector(page: Page, selector: string, propertyName: 
 }
 
 async function readArray<T>(page: Page, identifier: string, length?: number): Promise<T[]> {
-  return page.evaluate(
-    ({ identifier, length }) => {
-      const records = (window as any)[identifier]
-      if (records != null && typeof records.splice == "function") {
-        return records.splice(0, typeof length === "undefined" ? records.length : length)
-      } else {
-        return []
-      }
-    },
-    { identifier, length }
-  )
+  try {
+    return await page.evaluate(
+      ({ identifier, length }) => {
+        const records = (window as any)[identifier]
+        if (records != null && typeof records.splice == "function") {
+          return records.splice(0, typeof length === "undefined" ? records.length : length)
+        } else {
+          return []
+        }
+      },
+      { identifier, length }
+    )
+  } catch (error) {
+    if (!(error instanceof Error) || !error.message.includes("Execution context was destroyed")) {
+      throw error
+    }
+    await nextBeat()
+    return readArray(page, identifier, length)
+  }
 }
 
 export function readEventLogs(page: Page, length?: number): Promise<EventLog[]> {
