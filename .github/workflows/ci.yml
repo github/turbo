@@ -17,7 +17,7 @@ jobs:
         key: ${{ runner.os }}-yarn-${{ hashFiles('**/yarn.lock') }}
 
     - run: yarn install
-    - run: yarn run playwright install --with-deps
+    - run: yarn run playwright install --with-deps chromium firefox
     - run: yarn build
 
     - name: Set Chrome Version
