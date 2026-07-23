@@ -17,7 +17,8 @@ jobs:
         key: ${{ runner.os }}-yarn-${{ hashFiles('**/yarn.lock') }}
 
     - run: yarn install
-    - run: yarn run playwright install --with-deps chromium firefox
+    - name: Install Playwright browsers
+      run: npx --yes --package=node@18.20.8 --call 'node node_modules/playwright-core/cli.js install --with-deps chromium firefox'
     - run: yarn build
 
     - name: Set Chrome Version
