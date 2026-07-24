@@ -15,5 +15,5 @@ test.beforeEach(async ({ page }, workerInfo) => {
 })
 
 test.afterEach(async ({ page }) => {
-  await page.evaluate(() => window.Turbo.setCSPTrustedTypesPolicy(null))
+  await page.evaluate(() => window.Turbo?.setCSPTrustedTypesPolicy(null))
 })

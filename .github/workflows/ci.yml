@@ -4,26 +4,30 @@ on: [push]
 
 jobs:
   build:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
 
     steps:
     - uses: actions/checkout@v3
     - uses: actions/setup-node@v3
       with:
-        node-version: '16'
+        node-version: '26'
     - uses: actions/cache@v3
       with:
         path: node_modules
         key: ${{ runner.os }}-yarn-${{ hashFiles('**/yarn.lock') }}
 
     - run: yarn install
-    - run: yarn run playwright install --with-deps
+    - name: Install Playwright browsers
+      run: npx --yes --package=node@18.20.8 --call 'node node_modules/playwright-core/cli.js install --with-deps chromium firefox'
     - run: yarn build
 
-    - name: Set Chrome Version
+    - name: Configure ChromeDriver
       run: |
         CHROMEVER="$(chromedriver --version | cut -d' ' -f2)"
         echo "Actions ChromeDriver is $CHROMEVER"
+        driver_dir="node_modules/@theintern/digdug/selenium-standalone/${CHROMEVER}/x64"
+        mkdir -p "$driver_dir"
+        install -m 755 "$(command -v chromedriver)" "$driver_dir/chromedriver"
         echo "CHROMEVER=${CHROMEVER}" >> $GITHUB_ENV
 
     - name: Lint

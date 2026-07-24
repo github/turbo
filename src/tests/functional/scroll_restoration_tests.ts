@@ -16,7 +16,7 @@ test("test reloading after scrolling", async ({ page }) => {
   const { y: yAfterScrolling } = await scrollPosition(page)
   assert.notEqual(yAfterScrolling, 0)
 
-  await page.reload()
+  await Promise.all([page.waitForNavigation(), page.evaluate(() => window.location.reload())])
   const { y: yAfterReloading } = await scrollPosition(page)
   assert.notEqual(yAfterReloading, 0)
 })
