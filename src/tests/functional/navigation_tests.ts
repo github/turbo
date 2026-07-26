@@ -39,6 +39,11 @@ test("test navigating renders a progress bar", async ({ page }) => {
 
   await waitUntilSelector(page, ".turbo-progress-bar")
   assert.ok(await hasSelector(page, ".turbo-progress-bar"), "displays progress bar")
+  assert.match(
+    await page.locator(".turbo-progress-bar").evaluate((element) => (element as HTMLDivElement).style.transform),
+    /^scaleX\(.+\) translateZ\(0(px)?\)$/,
+    "animates progress with transform"
+  )
 
   await nextEventNamed(page, "turbo:load")
   await waitUntilNoSelector(page, ".turbo-progress-bar")
