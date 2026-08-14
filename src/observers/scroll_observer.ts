@@ -7,6 +7,7 @@ export interface ScrollObserverDelegate {
 export class ScrollObserver {
   readonly delegate: ScrollObserverDelegate
   started = false
+  scrollScheduled = false
 
   constructor(delegate: ScrollObserverDelegate) {
     this.delegate = delegate
@@ -28,7 +29,13 @@ export class ScrollObserver {
   }
 
   onScroll = () => {
-    this.updatePosition({ x: window.pageXOffset, y: window.pageYOffset })
+    if (this.scrollScheduled) return
+
+    this.scrollScheduled = true
+    requestAnimationFrame(() => {
+      this.scrollScheduled = false
+      this.updatePosition({ x: window.pageXOffset, y: window.pageYOffset })
+    })
   }
 
   // Private

@@ -10,6 +10,7 @@ export class ProgressBar {
         display: block;
         top: 0;
         left: 0;
+        width: calc(var(--turbo-progress-bar-scale, 0) * 100%);
         height: 3px;
         background: #0076ff;
         z-index: 2147483647;
@@ -68,7 +69,7 @@ export class ProgressBar {
   }
 
   installProgressElement() {
-    this.progressElement.style.width = "0"
+    this.progressElement.style.setProperty("--turbo-progress-bar-scale", "0")
     this.progressElement.style.opacity = "1"
     document.documentElement.insertBefore(this.progressElement, document.body)
     this.refresh()
@@ -102,7 +103,7 @@ export class ProgressBar {
 
   refresh() {
     requestAnimationFrame(() => {
-      this.progressElement.style.width = `${10 + this.value * 90}%`
+      this.progressElement.style.setProperty("--turbo-progress-bar-scale", `${(10 + this.value * 90) / 100}`)
     })
   }
 
