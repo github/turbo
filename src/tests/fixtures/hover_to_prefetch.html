@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html data-skip-event-details="turbo:before-fetch-request turbo:before-prefetch">
+  <head>
+    <meta charset="utf-8">
+    <title>Hover to prefetch</title>
+    <script src="/dist/turbo.es2017-umd.js" data-turbo-track="reload"></script>
+    <script src="/src/tests/fixtures/test.js"></script>
+  </head>
+  <body>
+    <h1>Hover to prefetch</h1>
+
+    <a id="unmarked-link" href="/src/tests/fixtures/frames/part.html?unmarked">Unmarked link</a>
+    <div data-turbo-prefetch>
+      <a id="parent-only-link" href="/src/tests/fixtures/frames/part.html?parent-only">Parent-only opt-in</a>
+    </div>
+    <a id="disabled-link" href="/src/tests/fixtures/frames/part.html?disabled" data-turbo-prefetch="false">Disabled link</a>
+    <a id="unsafe-link" href="/src/tests/fixtures/frames/part.html?unsafe" data-turbo-prefetch data-turbo-method="post">Unsafe link</a>
+
+    <turbo-frame id="part">
+      <a id="waste-link" href="/src/tests/fixtures/frames/part.html?waste" data-turbo-prefetch>Waste prefetch</a>
+      <a id="hit-link" href="/src/tests/fixtures/frames/part.html?hit" data-turbo-prefetch>Hit prefetch</a>
+      <a id="custom-delay-link" href="/src/tests/fixtures/frames/part.html?custom-delay" data-turbo-prefetch data-turbo-prefetch-delay="250">Custom delay</a>
+      <a id="cancel-delay-link" href="/src/tests/fixtures/frames/part.html?cancel-delay" data-turbo-prefetch data-turbo-prefetch-delay="250">Canceled delay</a>
+      <a id="expiry-link" href="/src/tests/fixtures/frames/part.html?expiry" data-turbo-prefetch>Expiring prefetch</a>
+    </turbo-frame>
+
+    <a id="explicit-frame-link" href="/src/tests/fixtures/frames/part.html?explicit-frame" data-turbo-frame="part" data-turbo-prefetch>Explicit frame</a>
+
+    <turbo-frame id="top-frame" target="_top">
+      <a id="top-link" href="/src/tests/fixtures/one.html?top" data-turbo-prefetch>Top navigation</a>
+    </turbo-frame>
+  </body>
+</html>
