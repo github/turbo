@@ -30,6 +30,14 @@ export {
 
 export { TurboSubmitStartEvent, TurboSubmitEndEvent } from "./drive/form_submission"
 export { TurboFrameMissingEvent } from "./frames/frame_controller"
+export {
+  PrefetchEventDetail,
+  TurboBeforePrefetchEvent,
+  TurboPrefetchHitEvent,
+  TurboPrefetchStartEvent,
+  TurboPrefetchWasteEvent,
+} from "../observers/link_prefetch_observer"
+export { PrefetchWasteReason } from "./drive/prefetch_cache"
 
 export { StreamActions, TurboStreamAction, TurboStreamActions } from "./streams/stream_actions"
 export { setCSPTrustedTypesPolicy } from "../trusted_types"

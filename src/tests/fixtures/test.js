@@ -66,4 +66,8 @@
   "turbo:frame-render",
   "turbo:frame-missing",
   "turbo:reload",
+  "turbo:before-prefetch",
+  "turbo:prefetch-start",
+  "turbo:prefetch-hit",
+  "turbo:prefetch-waste",
 ])

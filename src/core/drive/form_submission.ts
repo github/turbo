@@ -3,6 +3,7 @@ import { FetchResponse } from "../../http/fetch_response"
 import { expandURL } from "../url"
 import { dispatch, getAttribute, getMetaContent, hasAttribute } from "../../util"
 import { StreamMessage } from "../streams/stream_message"
+import { prefetchCache } from "./prefetch_cache"
 
 export interface FormSubmissionDelegate {
   formSubmissionStarted(formSubmission: FormSubmission): void
@@ -163,6 +164,8 @@ export class FormSubmission {
   }
 
   requestStarted(_request: FetchRequest) {
+    if (!this.isIdempotent) prefetchCache.clear("form_submission")
+
     this.state = FormSubmissionState.waiting
     this.submitter?.setAttribute("disabled", "")
     dispatch<TurboSubmitStartEvent>("turbo:submit-start", {
