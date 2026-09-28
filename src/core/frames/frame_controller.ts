@@ -184,7 +184,7 @@ export class FrameController
           if (this.view.renderPromise) await this.view.renderPromise
           this.changeHistory()
 
-          await this.view.render(renderer)
+          await this.view.render(renderer, fetchResponse)
           this.complete = true
           session.frameRendered(fetchResponse, this.element)
           session.frameLoaded(this.element)

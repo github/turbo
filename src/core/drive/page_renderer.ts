@@ -98,6 +98,8 @@ export class PageRenderer extends Renderer<HTMLBodyElement, PageSnapshot> {
 
   removeCurrentHeadProvisionalElements() {
     for (const element of this.currentHeadProvisionalElements) {
+      if (isManagedByReact(element)) continue
+
       document.head.removeChild(element)
     }
   }
@@ -145,4 +147,18 @@ export class PageRenderer extends Renderer<HTMLBodyElement, PageSnapshot> {
   get newBodyScriptElements() {
     return this.newElement.querySelectorAll("script")
   }
+}
+
+const REACT_INTERNAL_PREFIXES = ["__reactFiber$", "__reactProps$", "__reactContainer$"]
+
+function isManagedByReact(node: Element) {
+  for (const key in node) {
+    if (key[0] !== "_" || key[1] !== "_") continue
+
+    for (const prefix of REACT_INTERNAL_PREFIXES) {
+      if (key.startsWith(prefix)) return true
+    }
+  }
+
+  return false
 }

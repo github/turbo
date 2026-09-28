@@ -11,6 +11,30 @@ It's all done by sending HTML over the wire. And for those instances when that's
 
 Read more on [turbo.hotwired.dev](https://turbo.hotwired.dev).
 
+## Hover prefetching
+
+Hover prefetching is opt-in per link. Add `data-turbo-prefetch` to fetch a link after it has been hovered for 100 milliseconds:
+
+```html
+<a href="/messages" data-turbo-prefetch>Messages</a>
+```
+
+Use `data-turbo-prefetch-delay` to override the delay in milliseconds. Invalid or empty values use the 100 millisecond default:
+
+```html
+<a href="/messages" data-turbo-prefetch data-turbo-prefetch-delay="250">Messages</a>
+```
+
+Prefetching resolves `data-turbo-frame`, the closest frame's `target`, or the closest frame's `id` and sends the corresponding `Turbo-Frame` request header. A `_top` target remains a full-page request. Unsafe, cross-origin, same-page, Turbo Stream, UJS, confirmation, targeted, and download links are not prefetched. Prevent `turbo:before-prefetch` to apply additional application-specific exclusions.
+
+Turbo dispatches lifecycle events that can be counted to calculate prefetch effectiveness:
+
+* `turbo:prefetch-start` when the delayed request starts
+* `turbo:prefetch-hit` when navigation reuses that request
+* `turbo:prefetch-waste` when a started request is discarded, with a `reason` in `event.detail`
+
+Each lifecycle event includes the same `id`, plus `url`, resolved `frame`, and configured `delay`. Hit and waste events also include `duration` in milliseconds. A hover canceled before its delay does not emit a start or waste event. Calculate hit rate as hit events divided by start events, and waste rate as waste events divided by start events.
+
 ## Contributing
 
 Please read [CONTRIBUTING.md](./CONTRIBUTING.md).

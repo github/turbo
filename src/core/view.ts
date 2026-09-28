@@ -3,10 +3,12 @@ import { Renderer, Render } from "./renderer"
 import { Snapshot } from "./snapshot"
 import { Position } from "./types"
 import { getAnchor } from "./url"
+import { FetchResponse } from "../http/fetch_response"
 
 export interface ViewRenderOptions<E> {
   resume: (value: any) => void
   render: Render<E>
+  fetchResponse?: FetchResponse
 }
 
 export interface ViewDelegate<E extends Element, S extends Snapshot<E>> {
@@ -81,7 +83,7 @@ export abstract class View<
 
   // Rendering
 
-  async render(renderer: R) {
+  async render(renderer: R, fetchResponse?: FetchResponse) {
     const { isPreview, shouldRender, newSnapshot: snapshot } = renderer
     if (shouldRender) {
       try {
@@ -90,7 +92,7 @@ export abstract class View<
         await this.prepareToRenderSnapshot(renderer)
 
         const renderInterception = new Promise((resolve) => (this.resolveInterceptionPromise = resolve))
-        const options = { resume: this.resolveInterceptionPromise, render: this.renderer.renderElement }
+        const options = { resume: this.resolveInterceptionPromise, render: this.renderer.renderElement, fetchResponse }
         const immediateRender = this.delegate.allowsImmediateRender(snapshot, options)
         if (!immediateRender) await renderInterception
 

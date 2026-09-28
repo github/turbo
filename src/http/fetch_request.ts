@@ -1,9 +1,9 @@
 import { FetchResponse } from "./fetch_response"
-import { FrameElement } from "../elements/frame_element"
 import { dispatch } from "../util"
 
 export type TurboBeforeFetchRequestEvent = CustomEvent<{
   fetchOptions: RequestInit
+  fetchRequest?: FetchRequest
   url: URL
   resume: (value: any) => void
 }>
@@ -66,8 +66,9 @@ export class FetchRequest {
   readonly headers: FetchRequestHeaders
   readonly url: URL
   readonly body?: FetchRequestBody
-  readonly target?: FrameElement | HTMLFormElement | null
+  readonly target?: Element | null
   readonly abortController = new AbortController()
+  response?: Promise<Response>
   private resolveRequestPromise = (_value: any) => {}
 
   constructor(
@@ -75,7 +76,7 @@ export class FetchRequest {
     method: FetchMethod,
     location: URL,
     body: FetchRequestBody = new URLSearchParams(),
-    target: FrameElement | HTMLFormElement | null = null
+    target: Element | null = null
   ) {
     this.delegate = delegate
     this.method = method
@@ -104,10 +105,12 @@ export class FetchRequest {
   async perform(): Promise<FetchResponse | void> {
     const { fetchOptions } = this
     this.delegate.prepareHeadersForRequest?.(this.headers, this)
-    await this.allowRequestToBeIntercepted(fetchOptions)
+    const event = await this.allowRequestToBeIntercepted(fetchOptions)
     try {
       this.delegate.requestStarted(this)
-      const response = await fetch(this.url.href, fetchOptions)
+
+      this.response = event.detail.fetchRequest?.response || fetch(this.url.href, fetchOptions)
+      const response = await this.response
       return await this.receive(response)
     } catch (error) {
       if ((error as Error).name !== "AbortError") {
@@ -180,6 +183,8 @@ export class FetchRequest {
       target: this.target as EventTarget,
     })
     if (event.defaultPrevented) await requestInterception
+
+    return event
   }
 
   private willDelegateErrorHandling(error: Error) {

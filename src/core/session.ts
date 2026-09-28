@@ -4,6 +4,7 @@ import { CacheObserver } from "../observers/cache_observer"
 import { FormSubmitObserver, FormSubmitObserverDelegate } from "../observers/form_submit_observer"
 import { FrameRedirector } from "./frames/frame_redirector"
 import { History, HistoryDelegate } from "./drive/history"
+import { LinkPrefetchObserver, LinkPrefetchObserverDelegate } from "../observers/link_prefetch_observer"
 import { LinkClickObserver, LinkClickObserverDelegate } from "../observers/link_click_observer"
 import { FormLinkClickObserver, FormLinkClickObserverDelegate } from "../observers/form_link_click_observer"
 import { getAction, getExtension, expandURL, isPrefixedBy, Locatable } from "./url"
@@ -42,6 +43,7 @@ export class Session
     FormSubmitObserverDelegate,
     HistoryDelegate,
     FormLinkClickObserverDelegate,
+    LinkPrefetchObserverDelegate,
     LinkClickObserverDelegate,
     NavigatorDelegate,
     PageObserverDelegate,
@@ -56,6 +58,7 @@ export class Session
 
   readonly pageObserver = new PageObserver(this)
   readonly cacheObserver = new CacheObserver()
+  readonly linkPrefetchObserver = new LinkPrefetchObserver(this, document)
   readonly linkClickObserver = new LinkClickObserver(this, window)
   readonly formSubmitObserver = new FormSubmitObserver(this, document)
   readonly scrollObserver = new ScrollObserver(this)
@@ -74,6 +77,7 @@ export class Session
     if (!this.started) {
       this.pageObserver.start()
       this.cacheObserver.start()
+      this.linkPrefetchObserver.start()
       this.formLinkClickObserver.start()
       this.linkClickObserver.start()
       this.formSubmitObserver.start()
@@ -95,6 +99,7 @@ export class Session
     if (this.started) {
       this.pageObserver.stop()
       this.cacheObserver.stop()
+      this.linkPrefetchObserver.stop()
       this.formLinkClickObserver.stop()
       this.linkClickObserver.stop()
       this.formSubmitObserver.stop()
@@ -189,6 +194,12 @@ export class Session
   }
 
   submittedFormLinkToLocation() {}
+
+  // Link hover observer delegate
+
+  canPrefetchRequestToLocation(link: Element, location: URL) {
+    return this.elementIsNavigatable(link) && this.locationIsVisitable(location, this.snapshot.rootLocation)
+  }
 
   // Link click observer delegate
 
